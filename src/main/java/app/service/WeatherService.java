@@ -10,7 +10,7 @@ public interface WeatherService {
     /**
      * @param city Name of the city.
      * @return Key-value pairs object with data.
-     * @throws IOException Problem with obtaining result occurred.
+     * @throws IOException The Problem with getting a result occurred.
      */
     Map<String, String> getNextDayForecast(String city) throws IOException;
 }
