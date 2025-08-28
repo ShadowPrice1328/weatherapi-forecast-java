@@ -1,4 +1,16 @@
 package main.java.app.service;
 
-public class WeatherService {
+import java.io.IOException;
+import java.util.Map;
+
+/**
+ * Interface for service that interacts with WeatherAPI.
+ */
+public interface WeatherService {
+    /**
+     * @param city Name of the city.
+     * @return Key-value pairs object with data.
+     * @throws IOException Problem with obtaining result occurred.
+     */
+    Map<String, String> getNextDayForecast(String city) throws IOException;
 }
