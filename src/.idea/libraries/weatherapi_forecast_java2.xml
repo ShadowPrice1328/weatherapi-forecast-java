@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="weatherapi-forecast-java2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/distributions/weatherapi-forecast-java.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

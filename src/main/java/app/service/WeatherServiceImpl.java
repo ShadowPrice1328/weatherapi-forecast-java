@@ -2,7 +2,6 @@ package main.java.app.service;
 
 import java.io.IOException;
 import java.util.Map;
-import app.service.WeatherService;
 
 /**
  * Service that interacts with WeatherAPI

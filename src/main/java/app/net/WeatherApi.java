@@ -6,7 +6,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface WeatherApi {
-    //forecast.json?key=47ba6033966f46f3854122612252808&q=Kyiv&days=1
     @GET("forecast.json")
     Call<JsonObject> getForecast(
             @Query("key") String apiKey,
