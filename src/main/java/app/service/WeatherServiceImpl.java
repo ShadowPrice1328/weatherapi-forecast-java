@@ -1,12 +1,18 @@
-package main.java.app.service;
+package app.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import main.java.app.net.RetrofitClient;
-import main.java.app.net.WeatherApi;
+import app.net.RetrofitClient;
+import app.net.WeatherApi;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.sql.Array;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,19 +22,40 @@ public class WeatherServiceImpl implements WeatherService {
     private final WeatherApi api;
     private final String apiKey;
     public WeatherServiceImpl(String apiKey) {
+        // Creating of a Retrofit client which creates endpoints written in given interface.
         this.api = RetrofitClient.getClient().create(WeatherApi.class);
         this.apiKey = apiKey;
     }
     @Override
-    public Map<String, String> getNextDayForecast(String city) throws IOException {
-        Response<JsonObject> response = api.getForecast(apiKey, city, 1).execute();
+    public Map<String, Object> getNextDayForecast(String city) throws IOException {
+        Response<JsonObject> response = api.getForecast(apiKey, city, 2).execute();
         if (!response.isSuccessful() || response.body() == null) {
             throw  new IOException("Failed to fetch forecast for " + city);
         }
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        JsonObject dayForecast = response.body();
 
-        return Map.of();
+        JsonObject dayForecast = response.body()
+                .getAsJsonObject("forecast")
+                .getAsJsonArray("forecastday")
+                .asList()
+                .stream()
+                .map(JsonElement::getAsJsonObject)
+                .filter(e -> e.get("date").getAsString().equals(tomorrow.toString()))
+                .findFirst()
+                .orElseThrow(() -> new IOException("No data found for tomorrow"));
+
+        JsonObject day = dayForecast.getAsJsonObject("day");
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("minTemp", day.get("mintemp_c").getAsDouble());
+        result.put("maxTemp", day.get("maxtemp_c").getAsDouble());
+        result.put("humidity", day.get("avghumidity").getAsInt());
+
+        JsonObject firstHour = dayForecast.getAsJsonArray("hour").get(0).getAsJsonObject();
+        result.put("windSpeed", firstHour.get("wind_kph").getAsDouble());
+        result.put("windDir", firstHour.get("wind_dir").getAsString());
+
+        return result;
     }
 }

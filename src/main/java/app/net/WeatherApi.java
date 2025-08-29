@@ -1,4 +1,4 @@
-package main.java.app.net;
+package app.net;
 
 import com.google.gson.JsonObject;
 import retrofit2.Call;

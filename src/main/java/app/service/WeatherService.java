@@ -1,4 +1,4 @@
-package main.java.app.service;
+package app.service;
 
 import java.io.IOException;
 import java.util.Map;
@@ -12,5 +12,5 @@ public interface WeatherService {
      * @return Key-value pairs object with data.
      * @throws IOException The Problem with getting a result occurred.
      */
-    Map<String, String> getNextDayForecast(String city) throws IOException;
+    Map<String, Object> getNextDayForecast(String city) throws IOException;
 }
