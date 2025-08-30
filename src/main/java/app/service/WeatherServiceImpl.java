@@ -25,28 +25,11 @@ public class WeatherServiceImpl implements WeatherService {
         this.apiKey = apiKey;
     }
     @Override
-    public DayForecast getNextDayForecast(String city) throws IOException {
-        Response<JsonObject> response = api.getForecast(apiKey, city, 2).execute();
-        if (!response.isSuccessful() || response.body() == null) {
-            throw  new IOException("Failed to fetch forecast for " + city);
-        }
+    public DayForecast getNextDayForecast(String city) throws Exception {
+        JsonObject tomorrowForecast = fetchTomorrowForecast(city);
 
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-
-        JsonArray forecastDays = response.body()
-                .getAsJsonObject("forecast")
-                .getAsJsonArray("forecastday");
-
-        JsonObject dayForecast = forecastDays
-                .asList()
-                .stream()
-                .map(JsonElement::getAsJsonObject)
-                .filter(e -> e.get("date").getAsString().equals(tomorrow.toString()))
-                .findFirst()
-                .orElseThrow(() -> new IOException("No data found for tomorrow"));
-
-        JsonObject day = dayForecast.getAsJsonObject("day");
-        JsonArray hourly = dayForecast.getAsJsonArray("hour");
+        JsonObject day = tomorrowForecast.getAsJsonObject("day");
+        JsonArray hourly = tomorrowForecast.getAsJsonArray("hour");
         JsonObject firstHour = hourly.get(0).getAsJsonObject();
 
         return new DayForecast(
@@ -56,5 +39,26 @@ public class WeatherServiceImpl implements WeatherService {
                 firstHour.get("wind_kph").getAsDouble(),
                 firstHour.get("wind_dir").getAsString()
         );
+    }
+
+    private JsonObject fetchTomorrowForecast(String city) throws Exception {
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        Response<JsonObject> response = api.getForecast(apiKey, city, 2).execute();
+
+        if (!response.isSuccessful() || response.body() == null) {
+            throw new Exception("Failed to fetch forecast for " + city);
+        }
+
+        JsonArray forecastDays = response.body()
+                .getAsJsonObject("forecast")
+                .getAsJsonArray("forecastday");
+
+        return forecastDays
+                .asList()
+                .stream()
+                .map(JsonElement::getAsJsonObject)
+                .filter(e -> e.get("date").getAsString().equals(tomorrow.toString()))
+                .findFirst()
+                .orElseThrow(() -> new IOException("No data found for tomorrow"));
     }
 }

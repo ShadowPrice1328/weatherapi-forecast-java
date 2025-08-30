@@ -14,5 +14,5 @@ public interface WeatherService {
      * @return Key-value pairs object with data.
      * @throws IOException The Problem with getting a result occurred.
      */
-    DayForecast getNextDayForecast(String city) throws IOException;
+    DayForecast getNextDayForecast(String city) throws Exception;
 }

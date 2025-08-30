@@ -24,5 +24,7 @@ public class WeatherTablePrinter {
                     d.windDir()
             );
         }
+
+        System.out.format(BORDER);
     }
 }
