@@ -10,6 +10,8 @@ import java.util.*;
  * Main class, entry point
  */
 public class WeatherApp {
+    private static final List<String> CITIES =
+            Arrays.asList("Chisinau", "Madrid", "Kyiv", "Amsterdam");
     public static void main(String[] args) throws Exception {
         String apiKey = System.getenv("WEATHERAPI_KEY");
         if (apiKey == null || apiKey.isEmpty()) {
@@ -17,21 +19,22 @@ public class WeatherApp {
             return;
         }
 
-        List<String> cities = Arrays.asList("Chisinau", "Madrid", "Kyiv", "Amsterdam");
-
         WeatherService weatherService = new WeatherServiceImpl(apiKey);
+        Map<String, DayForecast> forecastData = fetchForecasts(weatherService);
 
-        Map<String, DayForecast> forecastData = new LinkedHashMap<>();
+        printTable(forecastData);
+    }
 
-        for (String city : cities) {
+    private static Map<String, DayForecast> fetchForecasts(WeatherService service) {
+        Map<String, DayForecast> data = new LinkedHashMap<>();
+        for (String city : WeatherApp.CITIES) {
             try {
-                forecastData.put(city, weatherService.getNextDayForecast(city));
+                data.put(city, service.getNextDayForecast(city));
             } catch (Exception e) {
                 System.out.println("Failed to fetch data for " + city + ": " + e.getMessage());
             }
         }
-
-        printTable(forecastData);
+        return data;
     }
 
     private static void printTable(Map<String, DayForecast> forecastData) {
