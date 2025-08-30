@@ -26,6 +26,11 @@ public class WeatherApp {
         WeatherTablePrinter.print(forecastData);
     }
 
+    /**
+     * Fetching forecast for each city
+     * @param service Service that fetches data
+     * @return Fetched data presented as Map
+     */
     private static Map<String, DayForecast> fetchForecasts(WeatherService service) {
         Map<String, DayForecast> data = new LinkedHashMap<>();
         for (String city : WeatherApp.CITIES) {

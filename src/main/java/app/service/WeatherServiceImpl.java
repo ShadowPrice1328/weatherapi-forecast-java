@@ -10,8 +10,6 @@ import retrofit2.Response;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Service that interacts with WeatherAPI
@@ -24,6 +22,12 @@ public class WeatherServiceImpl implements WeatherService {
         this.api = RetrofitClient.getClient().create(WeatherApi.class);
         this.apiKey = apiKey;
     }
+
+    /**
+     * @param city Name of the city.
+     * @return DayForecast record with parsed data.
+     * @throws Exception Problem with parsing data.
+     */
     @Override
     public DayForecast getNextDayForecast(String city) throws Exception {
         JsonObject tomorrowForecast = fetchTomorrowForecast(city);
@@ -41,6 +45,11 @@ public class WeatherServiceImpl implements WeatherService {
         );
     }
 
+    /**
+     * @param city Name of the city.
+     * @return Fetched forecast data.
+     * @throws Exception Problem fetching getting data.
+     */
     private JsonObject fetchTomorrowForecast(String city) throws Exception {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         Response<JsonObject> response = api.getForecast(apiKey, city, 2).execute();

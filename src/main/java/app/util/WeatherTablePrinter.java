@@ -4,10 +4,15 @@ import app.model.DayForecast;
 
 import java.util.Map;
 
+/**
+ * Class for table operations
+ */
 public class WeatherTablePrinter {
     private static final String FORMAT = "| %-12s | %-13s | %-13s | %-12s | %-17s | %-8s |%n";
     private static final String BORDER = "+--------------+---------------+---------------+--------------+-------------------+----------+%n";
-
+    public static String formatDouble(double value) {
+        return String.format("%.1f", value);
+    }
     public static void print(Map<String, DayForecast> forecastData) {
         System.out.format(BORDER);
         System.out.format(FORMAT, "City", "Min Temp (°C)", "Max Temp (°C)", "Humidity (%)", "Wind Speed (kph)", "Wind Dir");
@@ -17,10 +22,10 @@ public class WeatherTablePrinter {
             DayForecast d = entry.getValue();
             System.out.format(FORMAT,
                     entry.getKey(),
-                    String.format("%.1f", d.minTemp()),
-                    String.format("%.1f", d.maxTemp()),
+                    formatDouble(d.minTemp()),
+                    formatDouble(d.maxTemp()),
                     d.humidity(),
-                    String.format("%.1f", d.windSpeed()),
+                    formatDouble(d.windSpeed()),
                     d.windDir()
             );
         }
