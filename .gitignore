@@ -5,6 +5,8 @@ out/
 !**/src/build/reports
 .idea/
 build/reports/
+build/tmp/
+build/classes/
 *.iml
 *.iws
 *.ipr
