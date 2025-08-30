@@ -2,7 +2,6 @@ package app.util;
 
 import app.model.DayForecast;
 
-import java.util.Date;
 import java.util.Map;
 
 public class WeatherTablePrinter {
@@ -18,11 +17,11 @@ public class WeatherTablePrinter {
             DayForecast d = entry.getValue();
             System.out.format(FORMAT,
                     entry.getKey(),
-                    String.format("%.1f", d.getMinTemp()),
-                    String.format("%.1f", d.getMaxTemp()),
-                    d.getHumidity(),
-                    String.format("%.1f", d.getWindSpeed()),
-                    d.getWindDir()
+                    String.format("%.1f", d.minTemp()),
+                    String.format("%.1f", d.maxTemp()),
+                    d.humidity(),
+                    String.format("%.1f", d.windSpeed()),
+                    d.windDir()
             );
         }
     }

@@ -3,6 +3,7 @@ package app;
 import app.model.DayForecast;
 import app.service.WeatherService;
 import app.service.WeatherServiceImpl;
+import app.util.WeatherTablePrinter;
 
 import java.util.*;
 
@@ -22,7 +23,7 @@ public class WeatherApp {
         WeatherService weatherService = new WeatherServiceImpl(apiKey);
         Map<String, DayForecast> forecastData = fetchForecasts(weatherService);
 
-        printTable(forecastData);
+        WeatherTablePrinter.print(forecastData);
     }
 
     private static Map<String, DayForecast> fetchForecasts(WeatherService service) {
@@ -35,26 +36,5 @@ public class WeatherApp {
             }
         }
         return data;
-    }
-
-    private static void printTable(Map<String, DayForecast> forecastData) {
-        String format = "| %-12s | %-13s | %-13s | %-12s | %-17s | %-8s |%n";
-        System.out.format("+--------------+---------------+---------------+--------------+-------------------+----------+%n");
-        System.out.format(format, "City", "Min Temp (°C)", "Max Temp (°C)", "Humidity (%)", "Wind Speed (kph)", "Wind Dir");
-        System.out.format("+--------------+---------------+---------------+--------------+-------------------+----------+%n");
-
-        for (Map.Entry<String, DayForecast> entry : forecastData.entrySet()) {
-            DayForecast d = entry.getValue();
-            System.out.format(format,
-                    entry.getKey(),
-                    String.format("%.1f", d.getMinTemp()),
-                    String.format("%.1f", d.getMaxTemp()),
-                    d.getHumidity(),
-                    String.format("%.1f", d.getWindSpeed()),
-                    d.getWindDir()
-            );
-        }
-
-        System.out.format("+--------------+---------------+---------------+--------------+-------------------+----------+%n");
     }
 }
