@@ -1,10 +1,14 @@
 package app;
 
+import app.model.DayForecast;
 import app.service.WeatherService;
 import app.service.WeatherServiceImpl;
 
 import java.util.*;
 
+/**
+ * Main class, entry point
+ */
 public class WeatherApp {
     public static void main(String[] args) throws Exception {
         String apiKey = System.getenv("WEATHERAPI_KEY");
@@ -17,31 +21,34 @@ public class WeatherApp {
 
         WeatherService weatherService = new WeatherServiceImpl(apiKey);
 
-        Map<String, Map<String, Object>> forecastData = new LinkedHashMap<>();
+        Map<String, DayForecast> forecastData = new LinkedHashMap<>();
 
         for (String city : cities) {
-            Map<String, Object> data = weatherService.getNextDayForecast(city);
-            forecastData.put(city, data);
+            try {
+                forecastData.put(city, weatherService.getNextDayForecast(city));
+            } catch (Exception e) {
+                System.out.println("Failed to fetch data for " + city + ": " + e.getMessage());
+            }
         }
 
         printTable(forecastData);
     }
 
-    private static void printTable(Map<String, Map<String, Object>> forecastData) {
+    private static void printTable(Map<String, DayForecast> forecastData) {
         String format = "| %-12s | %-13s | %-13s | %-12s | %-17s | %-8s |%n";
         System.out.format("+--------------+---------------+---------------+--------------+-------------------+----------+%n");
         System.out.format(format, "City", "Min Temp (°C)", "Max Temp (°C)", "Humidity (%)", "Wind Speed (kph)", "Wind Dir");
         System.out.format("+--------------+---------------+---------------+--------------+-------------------+----------+%n");
 
-        for (Map.Entry<String, Map<String, Object>> entry : forecastData.entrySet()) {
-            Map<String, Object> d = entry.getValue();
+        for (Map.Entry<String, DayForecast> entry : forecastData.entrySet()) {
+            DayForecast d = entry.getValue();
             System.out.format(format,
                     entry.getKey(),
-                    d.get("minTemp"),
-                    d.get("maxTemp"),
-                    d.get("humidity"),
-                    d.get("windSpeed"),
-                    d.get("windDir")
+                    String.format("%.1f", d.getMinTemp()),
+                    String.format("%.1f", d.getMaxTemp()),
+                    d.getHumidity(),
+                    String.format("%.1f", d.getWindSpeed()),
+                    d.getWindDir()
             );
         }
 

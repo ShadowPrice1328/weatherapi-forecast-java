@@ -1,5 +1,7 @@
 package app.service;
 
+import app.model.DayForecast;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import app.net.RetrofitClient;
@@ -23,7 +25,7 @@ public class WeatherServiceImpl implements WeatherService {
         this.apiKey = apiKey;
     }
     @Override
-    public Map<String, Object> getNextDayForecast(String city) throws IOException {
+    public DayForecast getNextDayForecast(String city) throws IOException {
         Response<JsonObject> response = api.getForecast(apiKey, city, 2).execute();
         if (!response.isSuccessful() || response.body() == null) {
             throw  new IOException("Failed to fetch forecast for " + city);
@@ -31,9 +33,11 @@ public class WeatherServiceImpl implements WeatherService {
 
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-        JsonObject dayForecast = response.body()
+        JsonArray forecastDays = response.body()
                 .getAsJsonObject("forecast")
-                .getAsJsonArray("forecastday")
+                .getAsJsonArray("forecastday");
+
+        JsonObject dayForecast = forecastDays
                 .asList()
                 .stream()
                 .map(JsonElement::getAsJsonObject)
@@ -42,16 +46,15 @@ public class WeatherServiceImpl implements WeatherService {
                 .orElseThrow(() -> new IOException("No data found for tomorrow"));
 
         JsonObject day = dayForecast.getAsJsonObject("day");
+        JsonArray hourly = dayForecast.getAsJsonArray("hour");
+        JsonObject firstHour = hourly.get(0).getAsJsonObject();
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("minTemp", day.get("mintemp_c").getAsDouble());
-        result.put("maxTemp", day.get("maxtemp_c").getAsDouble());
-        result.put("humidity", day.get("avghumidity").getAsInt());
-
-        JsonObject firstHour = dayForecast.getAsJsonArray("hour").get(0).getAsJsonObject();
-        result.put("windSpeed", firstHour.get("wind_kph").getAsDouble());
-        result.put("windDir", firstHour.get("wind_dir").getAsString());
-
-        return result;
+        return new DayForecast(
+                day.get("mintemp_c").getAsDouble(),
+                day.get("maxtemp_c").getAsDouble(),
+                day.get("avghumidity").getAsInt(),
+                firstHour.get("wind_kph").getAsDouble(),
+                firstHour.get("wind_dir").getAsString()
+        );
     }
 }
