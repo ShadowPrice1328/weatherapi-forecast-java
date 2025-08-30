@@ -22,7 +22,10 @@ public class WeatherServiceImpl implements WeatherService {
         this.api = RetrofitClient.getClient().create(WeatherApi.class);
         this.apiKey = apiKey;
     }
-
+    protected WeatherServiceImpl(WeatherApi api, String apiKey) {
+        this.api = api;
+        this.apiKey = apiKey;
+    }
     /**
      * @param city Name of the city.
      * @return DayForecast record with parsed data.
@@ -69,5 +72,9 @@ public class WeatherServiceImpl implements WeatherService {
                 .filter(e -> e.get("date").getAsString().equals(tomorrow.toString()))
                 .findFirst()
                 .orElseThrow(() -> new IOException("No data found for tomorrow"));
+    }
+
+    protected WeatherApi getApi() {
+        return api;
     }
 }
